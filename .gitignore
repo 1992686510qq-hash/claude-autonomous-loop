@@ -1,0 +1,27 @@
+# Runtime state (generated during execution)
+heartbeat.json
+checkpoint.json
+progress.txt
+timeline.json
+
+# Process IDs
+.*.pid
+
+# Logs
+*.log
+ralph.log
+watchdog.log
+notifier.log
+
+# Node modules
+node_modules/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo

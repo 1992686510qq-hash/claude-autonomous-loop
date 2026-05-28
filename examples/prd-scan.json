@@ -1,0 +1,56 @@
+{
+  "branchName": "ralph/file-scan",
+  "userStories": [
+    {
+      "id": "US-001",
+      "title": "扫描目标目录",
+      "description": "递归扫描指定目录，生成文件清单 CSV，包含 path/size/ext/modified 四列",
+      "acceptanceCriteria": [
+        "输出 inventory.csv",
+        "包含 path,size,ext,modified 四列",
+        "递归扫描所有子目录",
+        "排除指定的排除目录"
+      ],
+      "priority": 1,
+      "passes": false
+    },
+    {
+      "id": "US-002",
+      "title": "文件分类统计",
+      "description": "读取 inventory.csv，按扩展名分类统计，生成分类报告",
+      "acceptanceCriteria": [
+        "输出 classification.json",
+        "按文件类型分组（文档/代码/图片/媒体/配置/其他）",
+        "每组包含文件数和总大小",
+        "生成 human-readable 的 Markdown 报告"
+      ],
+      "priority": 2,
+      "passes": false
+    },
+    {
+      "id": "US-003",
+      "title": "提取文档内容",
+      "description": "从清单中筛选文档类文件（.md/.txt/.docx/.pdf/.json），提取文本内容",
+      "acceptanceCriteria": [
+        "输出 docs-content.md",
+        "包含每个文档的路径、摘要、关键信息",
+        "大文件只提取前 2000 字"
+      ],
+      "priority": 3,
+      "passes": false
+    },
+    {
+      "id": "US-004",
+      "title": "生成分析报告",
+      "description": "基于前面的扫描和提取结果，生成综合分析报告",
+      "acceptanceCriteria": [
+        "输出 analysis-report.md",
+        "包含文件分布统计",
+        "包含关键发现",
+        "包含建议和下一步行动"
+      ],
+      "priority": 4,
+      "passes": false
+    }
+  ]
+}

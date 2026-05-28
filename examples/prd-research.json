@@ -1,0 +1,53 @@
+{
+  "userStories": [
+    {
+      "id": "US-001",
+      "title": "调研目标领域",
+      "description": "搜索指定领域的最新进展，整理关键论文和技术趋势",
+      "acceptanceCriteria": [
+        "输出 research-overview.md",
+        "包含至少 10 篇关键论文的标题、作者、摘要",
+        "包含技术趋势总结"
+      ],
+      "priority": 1,
+      "passes": false
+    },
+    {
+      "id": "US-002",
+      "title": "竞品分析",
+      "description": "对比主流工具/框架的优缺点，生成对比表格",
+      "acceptanceCriteria": [
+        "输出 comparison.md",
+        "包含功能对比表格",
+        "包含性能对比数据",
+        "给出推荐方案"
+      ],
+      "priority": 2,
+      "passes": false
+    },
+    {
+      "id": "US-003",
+      "title": "技术方案设计",
+      "description": "基于调研结果，设计技术实现方案",
+      "acceptanceCriteria": [
+        "输出 design-doc.md",
+        "包含架构图描述",
+        "包含关键模块说明",
+        "包含风险评估"
+      ],
+      "priority": 3,
+      "passes": false
+    },
+    {
+      "id": "US-004",
+      "title": "生成调研报告",
+      "description": "汇总前面的调研和分析结果，生成最终报告",
+      "acceptanceCriteria": [
+        "输出 final-report.md",
+        "包含摘要、背景、调研结果、方案建议、参考文献"
+      ],
+      "priority": 4,
+      "passes": false
+    }
+  ]
+}
