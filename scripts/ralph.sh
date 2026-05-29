@@ -12,6 +12,8 @@ TOOL="claude"
 MAX_ITERATIONS=100
 MAX_TOKENS=0    # 0 = 不限制
 MAX_COST_USD=0  # 0 = 不限制
+USE_DAG=false
+MAX_PARALLEL=3
 
 while [[ $# -gt 0 ]]; do
   case $1 in
@@ -19,6 +21,8 @@ while [[ $# -gt 0 ]]; do
     --tool=*) TOOL="${1#*=}"; shift ;;
     --max-tokens) MAX_TOKENS="$2"; shift 2 ;;
     --max-cost) MAX_COST_USD="$2"; shift 2 ;;
+    --dag) USE_DAG=true; shift ;;
+    --max-parallel) MAX_PARALLEL="$2"; shift 2 ;;
     *)
       if [[ "$1" =~ ^[0-9]+$ ]]; then
         MAX_ITERATIONS="$1"
@@ -26,6 +30,14 @@ while [[ $# -gt 0 ]]; do
       shift ;;
   esac
 done
+
+# DAG 模式：委托给 dag-scheduler.sh
+if [ "$USE_DAG" = true ]; then
+  exec bash "$SCRIPT_DIR/dag-scheduler.sh" \
+    ${MAX_TOKENS:+--max-tokens $MAX_TOKENS} \
+    ${MAX_COST_USD:+--max-cost $MAX_COST_USD} \
+    --max-parallel "$MAX_PARALLEL"
+fi
 
 if [[ "$TOOL" != "claude" ]]; then
   echo "Error: 目前只支持 --tool claude"

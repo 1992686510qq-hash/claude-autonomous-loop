@@ -16,11 +16,27 @@
 4. 更新 heartbeat.json（设置 currentStory 和 status: running）
 5. 执行该 story
 6. 写结果到 output/ 目录
-7. 更新 checkpoint.json（标记完成，记录 output 路径和 timestamp）
-8. 更新 prd.json（设置 passes: true）
-9. 追加进度到 progress.txt
-10. 更新 heartbeat.json（设置 status: story_complete）
+7. 验证输出质量（见下方"验证步骤"）
+8. 更新 checkpoint.json（标记完成，记录 output 路径和 timestamp）
+9. 更新 prd.json（设置 passes: true）
+10. 追加进度到 progress.txt
+11. 更新 heartbeat.json（设置 status: story_complete）
 ```
+
+## 验证步骤
+
+每个 story 执行完成后，必须验证输出质量：
+
+1. **检查输出文件是否存在** — 读取 checkpoint 中记录的 output 路径，确认文件存在且非空
+2. **检查 acceptanceCriteria** — 逐条对照 acceptanceCriteria，确认每条都满足
+3. **检查明显错误** — 输出中是否包含 error/exception/traceback 等错误标记
+
+如果验证失败：
+- 将失败原因追加到 progress.txt
+- 重试该 story（最多 1 次）
+- 重试仍失败 → 标记为 failed，继续下一个
+
+验证通过后才更新 checkpoint.json 和 prd.json。
 
 ## 时间戳规则
 

@@ -14,6 +14,10 @@
 - **429 限流保护**: 自动检测 API 限流并等待重试
 - **Token 监控**: 实时统计 token 使用量（扫描模式 / 代理模式）
 - **时间轴记录**: 每个 story 的开始/子Agent/结束事件，生成运行报告
+- **Token 预算**: --max-tokens / --max-cost 自动停止，防止花超
+- **自动摘要**: 每轮压缩输出摘要，注入下一轮上下文
+- **验证步骤**: story 完成后自动验证输出质量，失败重试
+- **DAG 依赖**: --dag 模式，无依赖任务并行执行
 
 ## 架构
 
@@ -201,6 +205,27 @@ Ralph 重启时会读取 checkpoint，跳过已完成的任务。
   "failedStories": []
 }
 ```
+
+## DAG 依赖执行
+
+无依赖的任务可以并行执行，加速 2-3x：
+
+```json
+{
+  "userStories": [
+    {"id": "US-001", "dependsOn": [], "title": "扫描目录A"},
+    {"id": "US-002", "dependsOn": [], "title": "扫描目录B"},
+    {"id": "US-003", "dependsOn": ["US-001","US-002"], "title": "合并结果"}
+  ]
+}
+```
+
+```bash
+# 启用 DAG 模式
+bash scripts/ralph.sh --dag --max-parallel 3
+```
+
+`dependsOn` 为空或不填 = 无依赖，立即执行。`dependsOn` 列出的 story 全部完成后才执行。
 
 ## 自定义指南
 
