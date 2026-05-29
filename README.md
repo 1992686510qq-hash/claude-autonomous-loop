@@ -243,6 +243,34 @@ pip install mitmproxy
 mitmdump -s scripts/monitor/proxy-addon.py --set upstream_cert=false -p 8080
 ```
 
+## Token 预算
+
+限制总 token 消耗，防止花超：
+
+```bash
+# 启动时设置预算
+bash scripts/ralph.sh --max-tokens 50000000      # 最多 5000 万 token
+bash scripts/ralph.sh --max-cost 50               # 最多 $50
+bash scripts/ralph.sh --max-tokens 50000000 --max-cost 50  # 两者取先到的
+
+# 超预算时自动停止，退出码为 2
+```
+
+## 自动上下文摘要
+
+每个迭代结束后自动压缩输出摘要，注入下一轮上下文，防止上下文膨胀。
+
+摘要存储在 `.loop-context.md`，格式：
+```markdown
+# 迭代 N 摘要 (2026-05-29 14:30:00)
+
+- 本轮完成了 US-001、US-002
+- 关键产出: inventory.csv, analysis.json
+- 遇到的问题: 无
+```
+
+下一轮 Claude 进程启动时会自动读取这个摘要。
+
 ## 踩坑记录
 
 详见 [docs/pitfalls.md](docs/pitfalls.md)
