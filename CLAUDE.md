@@ -87,11 +87,89 @@ node -e "
 1. 输出：`<promise>COMPLETE</promise>`
 2. 更新 heartbeat.json 的 status 为 "completed"
 
+## 时间轴记录（必须执行）
+
+**关键规则：所有时间必须从系统获取，绝对不能自己编造！**
+
+获取真实时间的方法：
+```bash
+# 获取 ISO 格式时间
+date '+%Y-%m-%dT%H:%M:%S'
+# 获取 Unix 时间戳（用于 heartbeat.json）
+date '+%s'
+```
+
+每次记录事件时，必须先用 Bash 执行 `date` 命令获取真实时间，然后用获取到的时间写入 timeline.json。
+
+### 开始处理时追加：
+先执行 `CURRENT_TIME=$(date '+%Y-%m-%dT%H:%M:%S')` 获取真实时间，然后追加：
+```json
+{"time": "$CURRENT_TIME", "type": "STORY_START", "detail": "story标题", "story": "US-XXX", "agent": null, "status": "running"}
+```
+
+### 启动子 Agent 时追加：
+```json
+{"time": "ISO时间", "type": "AGENT_SPAWN", "detail": "子Agent任务描述", "story": "US-XXX", "agent": "agent-label", "status": "running"}
+```
+
+### 子 Agent 完成时追加：
+```json
+{"time": "ISO时间", "type": "AGENT_DONE", "detail": "结果摘要", "story": "US-XXX", "agent": "agent-label", "status": "done"}
+```
+
+### story 完成时追加：
+```json
+{"time": "ISO时间", "type": "STORY_END", "detail": "输出文件路径", "story": "US-XXX", "agent": null, "status": "done"}
+```
+
+### story 失败时追加：
+```json
+{"time": "ISO时间", "type": "STORY_FAIL", "detail": "失败原因", "story": "US-XXX", "agent": null, "status": "failed"}
+```
+
+### 全部完成时：
+1. 更新 timeline.json 的 meta.ended
+2. 读取 timeline.json 的所有 events
+3. 生成 `output/run-timeline.md`，格式如下：
+
+```markdown
+# 运行时间轴报告
+
+## 概览
+- 开始时间: ...
+- 结束时间: ...
+- 总耗时: ...
+- 完成 story: X/Y
+- 失败重试: N 次
+
+## 时间轴
+
+### HH:MM - 事件描述
+- HH:MM:SS | 类型 | 详情
+
+### 运行统计
+| 指标 | 值 |
+|---|---|
+| 总迭代次数 | N |
+| 总子Agent调用 | N |
+| 平均每story耗时 | N 分钟 |
+```
+
+## 停止条件
+
+当所有 story 的 `passes` 都为 `true` 时：
+
+1. 生成最终时间轴报告 `output/run-timeline.md`
+2. 更新 heartbeat.json 的 status 为 "completed"
+3. 输出：`<promise>COMPLETE</promise>`
+
 ## 重要提醒
 
 - 每次只处理一个 story
 - 处理前先读 checkpoint，避免重复工作
 - 每个 story 的输出必须写入文件
 - 保持 heartbeat.json 每 5 分钟更新一次
-- 不要跳过任何文件，确保全覆盖
+- **每个 story 必须记录时间轴事件（开始/子Agent/结束）**
+- **最终必须生成 output/run-timeline.md**
 - 遇到 429 限流错误时，等待 30 秒后重试
+- 子 Agent 调用之间保持 5 秒间隔
