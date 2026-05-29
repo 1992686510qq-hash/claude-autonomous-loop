@@ -91,7 +91,7 @@ while true; do
     # Ralph 在运行
     if [ "$DIFF" -gt "$TIMEOUT" ]; then
       echo "[$(date '+%Y-%m-%d %H:%M:%S')] WARNING: 心跳超时 ${DIFF}s > ${TIMEOUT}s，重启 Ralph..."
-      local pid=$(cat "$RALPH_PID_FILE" 2>/dev/null)
+      pid=$(cat "$RALPH_PID_FILE" 2>/dev/null)
       kill "$pid" 2>/dev/null || true
       sleep 2
       start_ralph
