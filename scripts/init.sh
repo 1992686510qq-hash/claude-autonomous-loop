@@ -53,6 +53,24 @@ else
   echo "  - progress.txt 已存在，跳过"
 fi
 
+# 初始化 timeline.json
+if [ ! -f "$PROJECT_DIR/timeline.json" ]; then
+  START_TIME=$(date '+%Y-%m-%dT%H:%M:%S')
+  cat > "$PROJECT_DIR/timeline.json" << EOF
+{
+  "meta": {
+    "started": "$START_TIME",
+    "ended": null,
+    "totalStories": 0
+  },
+  "events": []
+}
+EOF
+  echo "  ✓ timeline.json"
+else
+  echo "  - timeline.json 已存在，跳过"
+fi
+
 # 检查依赖
 echo ""
 echo "检查依赖..."
