@@ -12,6 +12,8 @@
 - **飞书通知**: 每完成一个任务推送消息
 - **子 Agent 并行**: 大任务自动拆分为多个子 Agent 并行处理
 - **429 限流保护**: 自动检测 API 限流并等待重试
+- **Token 监控**: 实时统计 token 使用量（扫描模式 / 代理模式）
+- **时间轴记录**: 每个 story 的开始/子Agent/结束事件，生成运行报告
 
 ## 架构
 
@@ -127,7 +129,11 @@ bash scripts/notifier.sh
 │   ├── init.sh            # 初始化状态文件
 │   ├── start.sh           # 一键启动
 │   ├── stop.sh            # 一键停止
-│   └── status.sh          # 查看运行状态
+│   ├── status.sh          # 查看运行状态
+│   ├── regen_pdf.py       # PDF 中文字体生成
+│   └── monitor/
+│       ├── monitor.py     # Token 监控（扫描 session 文件）
+│       └── proxy-addon.py # Token 监控（mitmproxy 代理模式）
 ├── examples/
 │   ├── prd-scan.json      # 示例：文件扫描任务
 │   ├── prd-research.json  # 示例：调研任务
@@ -221,6 +227,21 @@ Ralph 重启时会读取 checkpoint，跳过已完成的任务。
 | 心跳超时 | watchdog.sh | 600 秒 | 超时自动重启 |
 | 子 Agent 超时 | CLAUDE.md | 1800 秒 | 子任务最大执行时间 |
 | 通知频率 | notifier.js | 30 秒 | 检查完成状态的间隔 |
+
+## Token 监控
+
+运行过程中实时查看 token 消耗：
+
+```bash
+# 扫描模式（零配置，读 session 文件）
+python scripts/monitor/monitor.py --once           # 看一次
+python scripts/monitor/monitor.py                  # 每 30 秒刷新
+python scripts/monitor/monitor.py --all --once     # 扫描所有项目
+
+# 代理模式（100% 准确，需要 mitmproxy）
+pip install mitmproxy
+mitmdump -s scripts/monitor/proxy-addon.py --set upstream_cert=false -p 8080
+```
 
 ## 踩坑记录
 
